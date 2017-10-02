@@ -1,65 +1,56 @@
   #include <Servo.h>
   #include <Stepper.h>
   
-  const int stepsPerRevolution = 48;
-  const float resolution  = 7.5;
-  Stepper myStepper(stepsPerRevolution, 9, 10, 11, 12);
   
-  
-  Servo servo1;
-  Servo servo2;
+  const int stepsPerRevolution = 48;//set number of stepps per revolution
+  const float resolution  = 7.5;//set the accuracy (360/48)
+  Stepper myStepper(stepsPerRevolution, 9, 10, 11, 12); //digital pins for motor stepper
+  Servo servo1; //instance of class Servo for use 
   
   int prev;
   int act;
+  String command;
+  int azimut;
+  int elevation ;
   
   void setup()
   {
-    Serial.begin(9600);
-    servo1.attach(5);
-    servo2.attach(4);
-    myStepper.setSpeed(20);
-    
+    Serial.begin(9600); //set serila baud rate
+    servo1.attach(5); //pin for use servo
+    //servo2.attach(4);
+    myStepper.setSpeed(20); //number of rpm 
 
-    myStepper.step(step_degree(360));
+    myStepper.step(step_degree(0));
     servo1.write(0);
-    servo2.write(0);
+    delay(500);
+    servo1.write(45);
+    myStepper.step(step_degree(45));
     delay(500);
     servo1.write(90);
-    servo2.write(90);
+    myStepper.step(step_degree(90));
     delay(500);
-    servo1.write(0);
-    servo2.write(0);
+    servo1.write(0); 
+    myStepper.step(step_degree(0));
     delay(500);
-    servo1.write(45); 
-    servo2.write(45);
-    delay(500);
-    Serial.println("Hello");
-    
+    Serial.println("Init Serial comunitation");    
   }
-  
-  String command;
   
   void loop()
   {
-    int azimut;
-    int elevation ;
 
-    if(Serial.available())
+
+    if(Serial.available()) 
     {
       char c = Serial.read();
       
-      if(c == '\n')
+      if(c == '\n') //detect if a scape character 
       {
-        //Serial.println(command);
+        //Serial.println("Incoming message: [" + command + "]");
         azimut = parseAzimut(command);
         elevation = parseElevation(command);
-        act = azimut - prev;
-        
-        //(Serial.println("actual=" + String(act) + " azimut= " + String(azimut) + " previo= " + String(prev));
-        
-        moveElevation(elevation);
-        moveAzimut(azimut);
-        movestepper(act);
+        act = azimut - prev;        
+        moveElevation(elevation); //move the servo motor
+        moveAzimut(act); //move the stepper motor
   
         Serial.print("AZ= " + String(azimut));
         Serial.print(" ");
@@ -98,7 +89,7 @@
     return az;
   }
   
-  void moveElevation(int el)
+  void moveElevation(int elevation)
   {
     servo1.write(el);
     delay(200);  
@@ -106,13 +97,7 @@
   
   void moveAzimut(int az)
   {
-    servo2.write(az);
-    delay(200);  
-  }
-  
-  void movestepper(int degree)
-  {
-    myStepper.step(step_degree(degree));
+    myStepper.step(step_degree(az));
   }
   
   int step_degree(float desired_degree)

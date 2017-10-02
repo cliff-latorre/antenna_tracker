@@ -89,7 +89,7 @@
     return az;
   }
   
-  void moveElevation(int elevation)
+  void moveElevation(int el)
   {
     servo1.write(el);
     delay(200);  

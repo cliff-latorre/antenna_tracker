@@ -1,0 +1,40 @@
+escuchar puerto
+nc -l 0.0.0.0 4533  
+
+creando puertos seriales amarrados
+
+socat -d -d pty,raw,echo=0 pty,raw,echo=0
+cat </dev/pts/24
+echo "testing admal" > /dev/pts/25
+rotctld -m 202 -r /dev/pts/25 -s 9600 -C timeout=500 -vvv
+rotctld -m 202 -r /dev/ttyUSB0 -s 9600 -C timeout=500 -vvv
+
+
+
+mata proceso por el puerto que usan
+fuser -k /dev/ttys0
+
+
+
+!AZ43.5 EL0.9 UP000 XXX DN000 XX
+
+
+
+
+##############################3
+sudo apt-get install gpredict
+Please install HAMLIB manually to get the latest version as rotator position feedback will not work with the cached version.
+cd ~/Downloads/
+mkdir hamlib
+cd hamlib
+wget http://downloads.sourceforge.net/hamlib/hamlib-3.0.1.tar.gz
+tar -xvzf hamlib*
+cd hamlib-3.0.1
+./configure
+make
+sudo make install
+sudo ldconfig
+Plug the rotator into to a USB port and start the HAMLIB rotator control daemon in a terminal window:
+rotctld -m 202 -r /dev/ttyACM0 -s 9600 -C timeout=500 -vvv
+Start Gpredict. Select Preferences|Interfaces|Rotators.
+Add a new rotator and select: Az type 0 -> 180 -> 360
